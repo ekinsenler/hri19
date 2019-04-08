@@ -1,0 +1,16 @@
+TEXT_title
+<*,*,it,*>: Azione MODIM
+<*,*,*,*>: MODIM action
+----
+TEXT
+<*,*,it,*>: Questa è un'azione MODIM
+<*,*,*,*>:  This is a MODIM action
+----
+IMAGE
+<*,*,*,*>: img/hri2.jpg
+----
+TTS
+<*,*,it,*>: Ciao, questo è un esempio di azione multi-modale MODIM.
+<*,*,*,*>: Hello, this is an example of MODIM multi-modal action.
+----
+

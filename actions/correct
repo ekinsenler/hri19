@@ -1,0 +1,15 @@
+TEXT_title
+<*,*,it,*>: Ottimo!
+<*,*,*,*>: Good job!
+----
+IMAGE
+<*,*,*,*>: img/correct.png
+----
+TEXT
+<*,*,*,*>: &nbsp;
+----
+TTS
+<*,*,it,*>: Ottimo! Risposta esatta.
+<*,*,*,*>: Good job! Correct answer.
+----
+
