@@ -28,7 +28,16 @@ def show_number(number=1):
     im.display.loadUrl('slide.html')
 
     im.executeModality('TEXT_title',str(number))
-    im.executeModality('TEXT_default',str(number))
+    im.executeModality('TEXT_default',str(number)) 
+
+def welcome():
+    im.display.loadUrl('welcome'.html')
+
+def ask():
+
+
+
+
 
 # Start action server
 if __name__ == "__main__":
@@ -41,10 +50,10 @@ if __name__ == "__main__":
 
     # checkConditions(p)
 
-    for i in range(2):
-        mc.run_interaction(show_number)
-        p.exec_action(SAY_ACTION, str(i + 1))
-        p.exec_action(WAIT_ACTION, 1)
+    #for i in range(2):
+    #    mc.run_interaction(show_number)
+    #    p.exec_action(SAY_ACTION, str(i + 1))
+    #    p.exec_action(WAIT_ACTION, 1)
 
     # sequence
     # p.exec_action('say', 'hello')     # blocking

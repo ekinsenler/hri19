@@ -8,75 +8,54 @@
 
   <style>
     body {
+      background-color: #fff;
       font-family: sans-serif;
-      background-image: url(img/intro.png); 
-      // background-image: url(img/background.png);
-      background-size: 1000px;
-      background-repeat: no-repeat;
-      background-position: 0px 30px;
     }
     h1 {
-      font-weight: strong;
+      font-weight: normal;
       font-size: 300%;
-      font-family: "Verdana";
     }
-    h2 {
-      font-weight: normal;
-      font-size: 200%;
-      font-family: "Verdana";
-    }
-    p {
-      font-weight: normal;
-      font-size: 120%;
-    }
-    input[type=button] {
-      background-color: #A01010; /* Red */
-      border: none;
-      border-radius: 8px;
-      color: white;
-      padding: 14px 24px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 24px;
-      margin:10px 10px 10px 10px;
-    }
+
+  input[type=button] {
+    background-color: #808080; /* Grey */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 14px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    margin:10px 10px 10px 10px;
+  }
 
   </style>
 </head>
-
 <body>
 
-<!-- status -->
-<div align='left' id='status'> <font color='red'>NOT CONNECTED</font> </div>
+    <!-- status -->
+    <div align='left' id='status'> <font color='red'>NOT CONNECTED</font> </div>
 
-<div align='center' id='textup'>
-    <h2> </h2>
-</div>
-    
+    <!-- image -->
+    <p>
+    <div align='center'> <img height=300 id='image_default' src="img/welcome.jpg" alt="No image"/> </div>
+    </p>
+
     <!-- text -->
+
+    <p>
     <h1>
-    <div align='center' id='text_title'> Human-Robot Interaction </div>
+    <div align='center' id='text_default'>Welcome</div>
     </h1>
-
-    <br>
-
-    <div align='center'> <img width=800 id='image_default' src="img/hri.jpg" alt=""/> </div>
-
-    <br>
-
-    <h2>
-    <div align='center' id='text_default'> Welcome </div>
-    </h2>
+    </p>
 
 
     <br>
 
     <!-- buttons -->
     <div align='center' id='buttons'>
-      <input type="button" id="run" value="Start" onclick="runslides()">
+      <input type="button" id="run" value="Start" onclick="playgame()">
     </div>
-
 
   <!-- ****** SCRIPTS ****** -->
 
@@ -104,7 +83,7 @@
     function iminit() {
         codews.send(
             "begin()\n" +
-            "im.setRelativeDemoPath('hri2019')\n" +
+            "im.setRelativeDemoPath('hri19')\n" +
             "im.init()\n" +        
             "robot.setAlive(True)\n" +
             "robot.normalPosture()\n" +
@@ -115,13 +94,10 @@
 
     setTimeout(iminit,1000)
 
-    function runslides() {
-        console.log('runslides...');
+    function playgame() {
+        console.log('playgame...');
         code = "\n" +
-            "im.display.loadUrl('slide.html')\n" +
-            "im.execute('ciao')\n" +
-            "time.sleep(5)\n" +
-            "im.display.loadUrl('index.html')\n"
+            "im.display.loadUrl('memorygame/game.html')\n"
         codews.send(code);
     }
 
@@ -129,4 +105,3 @@
 
 </body>
 </html>
-
