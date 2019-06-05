@@ -1,4 +1,4 @@
-// var ip=window.location.hostname;
+var ip=window.location.hostname;
 
 const cards = document.querySelectorAll('.memory-card');
 
@@ -9,50 +9,53 @@ let timerStart = Date.now();
 let timerPassed;
 let counter = 0;
 
-// websocketserver connection
-// if (ip=='')
-//     ip='127.0.0.1';
-// port = 9100;
+//websocketserver connection
+if (ip=='')
+    ip='127.0.0.1';
+port = 9100;
 
-// console.log("Trying connection...")
-// wsrobot_init(ip,port);
+console.log("Trying connection...")
+wsrobot_init(ip,port);
 
-// var codeport = 9010;
-// var codeurl = "ws://"+ip+":"+codeport+"/websocketserver";
-// console.log(codeurl);
-// codews = new WebSocket(codeurl);
+var codeport = 9010;
+var codeurl = "ws://"+ip+":"+codeport+"/websocketserver";
+console.log(codeurl);
+codews = new WebSocket(codeurl);
 
-// var ctrlport = 9110;
-// var ctrlurl = "ws://"+ip+":"+ctrlport+"/ctrlwebsocketserver";
-// console.log(ctrlurl);
-// ctrlws = new WebSocket(ctrlurl);
+var ctrlport = 9110;
+var ctrlurl = "ws://"+ip+":"+ctrlport+"/ctrlwebsocketserver";
+console.log(ctrlurl);
+ctrlws = new WebSocket(ctrlurl);
 
-// function comfort() {
-//     console.log('comfort...');
-//     code = "\n" +
-//       "begin()\n" +
-//       "robot.say('Take your time. I am sure you can do it if you try harder.')" ++
-//       "end()\n");
-//     codews.send(code);
-// }
+function comfort() {
+  console.log('comfort...');
+  code = "\n" +
+    //"begin()\n" +
+    //"robot.say('Take your time. I am sure you can do it if you try harder.')" +
+    "im.executeModality('TEXT_default','Take your time.')\n";
+    //"end()\n";
+  codews.send(code);
+}
 
-// function congratulate1() {
-//   console.log('congratulate...');
-//   code = "\n" +
-//     "begin()\n" +
-//     "robot.say('Well done.')" ++
-//     "end()\n");
-//   codews.send(code);
-// }
+function congratulate1() {
+  console.log('congratulate...');
+  code = "\n" +
+    //"begin()\n" +
+    //"robot.say('Well done.')" +
+    "im.executeModality('TEXT_default','Well done.')\n";
+    //"end()\n";
+  codews.send(code);
+}
 
-// function congratulate2() {
-//   console.log('congratulate...');
-//   code = "\n" +
-//     "begin()\n" +
-//     "robot.say('Your worked hard and succeeded.')" ++
-//     "end()\n");
-//   codews.send(code);
-// }
+function congratulate2() {
+  console.log('congratulate...');
+  code = "\n" +
+    //"begin()\n" +
+    //"robot.say('Your worked hard and succeeded.')" +
+    "im.executeModality('TEXT_default','You win!')\n";
+    //"end()\n";
+  codews.send(code);
+}
 
 // game scripts
 function flipCard() {
@@ -83,6 +86,7 @@ function checkForMatch() {
 }
 
 function disableCards() {
+  congratulate1();
   console.log("Well done.");
 
   firstCard.removeEventListener('click', flipCard);
@@ -91,6 +95,7 @@ function disableCards() {
   counter+=1
   console.log(counter);
   if (counter === 6) {
+    congratulate2();
     console.log("You win.");
     console.log("Would you like to restart the game?");
 
@@ -121,7 +126,7 @@ function unflipCards() {
     timerStart = Date.now();
     // comfort
     console.log("Take your time. Don't worry.");
-    //comfort();
+    comfort();
   }
 }
 
