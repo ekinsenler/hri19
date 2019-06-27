@@ -88,7 +88,7 @@ function checkForMatch() {
 function disableCards() {
   congratulate1();
   console.log("Well done.");
-
+  
   firstCard.removeEventListener('click', flipCard);
   secondCard.removeEventListener('click', flipCard);
 
@@ -96,13 +96,12 @@ function disableCards() {
   console.log(counter);
   if (counter === 6) {
     congratulate2();
-    console.log("You win.");
-    console.log("Would you like to restart the game?");
-
-    setTimeout(() => {
-      cards.forEach(card => card.classList.remove('flip'));
-      cards.forEach(card => card.addEventListener('click', flipCard));
-    }, 1500);    
+    if (confirm("Would you like to restart the game?")) {
+      setTimeout(() => {
+        cards.forEach(card => card.classList.remove('flip'));
+        cards.forEach(card => card.addEventListener('click', flipCard));
+      }, 500);
+    }    
   }
 
   resetBoard();
