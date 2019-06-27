@@ -1,5 +1,6 @@
 import os, sys
 from functools import partial
+from action_names import *
 
 cmdsever_ip = os.getenv('PEPPER_IP')
 cmdserver_port = 9101
@@ -15,9 +16,6 @@ sys.path.append(pdir + '/src/GUI')
 
 from ws_client import *
 import ws_client
-
-SAY_ACTION = 'sayD'
-WAIT_ACTION = 'waitD'
 
 def checkConditions(p):
 
