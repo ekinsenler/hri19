@@ -36,3 +36,15 @@ class WebServer:
 
         thread = threading.Thread(target=work)
         thread.start()
+
+import socket
+import time
+PC_IP = socket.gethostbyname(socket.gethostname())
+HTTP_SERVER_PORT = '9585'
+HTTP_SERVER = 'http://' + PC_IP + '/'
+print (HTTP_SERVER)
+
+http_server = WebServer()
+http_server.run_non_blocking(HTTP_SERVER_PORT)
+# Wait server to start
+time.sleep(3)

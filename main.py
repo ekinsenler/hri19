@@ -1,13 +1,14 @@
+import socket
+
 PEPPER_IP = '10.0.1.200'
 PEPPER_CMD_PORT = '9559'
-PC_IP = '10.0.1.202'
+PC_IP = socket.gethostbyname(socket.gethostname())
 WEB_SOCKET_PORT = '9581'
-HTTP_SERVER_PORT = '9580'
+HTTP_SERVER_PORT = '9585'
 
 HTTP_SERVER = 'http://' + PC_IP + '/'
 
 pepper_session = None
-
 
 def get_pepper_session():
     global pepper_session
@@ -28,14 +29,14 @@ def launch_address(url):
     tablet_service.showWebview(url)
 
 
-# Launch HTTP server
-from web_server import WebServer, get_memory_game_url
-import time
-
-http_server = WebServer()
-http_server.run_non_blocking(HTTP_SERVER_PORT)
-# Wait server to start
-time.sleep(3)
+# # Launch HTTP server
+# from web_server import WebServer, get_memory_game_url
+# import time
+#
+# http_server = WebServer()
+# http_server.run_non_blocking(HTTP_SERVER_PORT)
+# # Wait server to start
+# time.sleep(3)
 
 # Launch page on pepper
 launch_address(get_memory_game_url(HTTP_SERVER))
