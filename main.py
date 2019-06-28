@@ -30,7 +30,7 @@ def launch_address(url):
 
 
 # # Launch HTTP server
-# from web_server import WebServer, get_memory_game_url
+from web_server import get_memory_game_url
 # import time
 #
 # http_server = WebServer()
