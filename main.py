@@ -1,12 +1,10 @@
-import socket
-
 PEPPER_IP = '10.0.1.200'
 PEPPER_CMD_PORT = '9559'
-PC_IP = socket.gethostbyname(socket.gethostname())
-WEB_SOCKET_PORT = '9581'
+PC_IP = '10.0.1.205'
+WEB_SOCKET_PORT = 9581
 HTTP_SERVER_PORT = '9585'
 
-HTTP_SERVER = 'http://' + PC_IP + '/'
+HTTP_SERVER = 'http://' + PC_IP + ':'+ HTTP_SERVER_PORT + '/'
 
 pepper_session = None
 
@@ -30,13 +28,8 @@ def launch_address(url):
 
 
 # # Launch HTTP server
-from web_server import get_memory_game_url
-# import time
-#
-# http_server = WebServer()
-# http_server.run_non_blocking(HTTP_SERVER_PORT)
-# # Wait server to start
-# time.sleep(3)
+def get_memory_game_url(pc_address):
+    return pc_address + 'memorygame/game.html'
 
 # Launch page on pepper
 launch_address(get_memory_game_url(HTTP_SERVER))

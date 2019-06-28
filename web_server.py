@@ -46,5 +46,3 @@ print (HTTP_SERVER)
 
 http_server = WebServer()
 http_server.run_non_blocking(HTTP_SERVER_PORT)
-# Wait server to start
-time.sleep(3)
