@@ -46,4 +46,4 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
 
     http_server = WebServer()
-    http_server.run_non_blocking(args.port)
+    http_server.run(args.port)
