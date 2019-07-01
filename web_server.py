@@ -19,6 +19,11 @@ class WebServer:
             print(filename)
             return send_from_directory('./memorygame', filename)
 
+        @self.app.route('/welcome/<path:filename>')
+        def welcome(filename):
+            print(filename)
+            return send_from_directory('./welcome', filename)
+
         @self.app.route('/<path:filename>')
         def root(filename):
             return send_from_directory('./', filename)

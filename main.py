@@ -2,6 +2,8 @@ PEPPER_CMD_PORT = '9559'
 WEB_SOCKET_PORT = 9581
 HTTP_SERVER_PORT = '9580'
 
+PEPPER_BWSR_ID = 'Linux; Android 5.1; LPT_200AR Build/LMY47I'
+
 from web_server import get_memory_game_url
 
 if __name__ == '__main__':
@@ -58,6 +60,20 @@ if __name__ == '__main__':
     # Called when a client sends a message
     def message_received(client, server, message):
         print("Client(%d) said: %s" % (client['id'], message))
+        if message == "WELCOME_SCREEN":
+            pass
+        elif message == "GAME_INIT":
+            pass
+        elif message == "GAME_WINNER":
+            pass
+        elif message == "GAME_MISTAKES_2":
+            pass
+        elif message == "GAME_MISTAKES_4":
+            pass
+        elif message == "GAME_GOOD_1":
+            pass
+        elif message == "GAME_GOOD_2":
+            pass
 
 
     from web_sockets import run_sockets
