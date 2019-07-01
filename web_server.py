@@ -37,12 +37,13 @@ class WebServer:
         thread = threading.Thread(target=work)
         thread.start()
 
-import socket
-import time
-PC_IP = socket.gethostbyname(socket.gethostname())
-HTTP_SERVER_PORT = '9585'
-HTTP_SERVER = 'http://' + PC_IP + '/'
-print (HTTP_SERVER)
 
-http_server = WebServer()
-http_server.run_non_blocking(HTTP_SERVER_PORT)
+if __name__ == '__main__':
+    import argparse
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--port", default='9580')
+
+    args = arg_parser.parse_args()
+
+    http_server = WebServer()
+    http_server.run_non_blocking(args.port)
