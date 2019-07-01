@@ -2,6 +2,8 @@ PEPPER_CMD_PORT = '9559'
 WEB_SOCKET_PORT = 9581
 HTTP_SERVER_PORT = '9580'
 
+from web_server import get_memory_game_url
+
 if __name__ == '__main__':
     import argparse
 
@@ -13,7 +15,7 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
 
     is_emulation = args.emul
-    HTTP_SERVER = 'http://' + ('localhost' if is_emulation else args.pc_ip) + ':' + HTTP_SERVER_PORT + '/'
+    HTTP_SERVER = 'http://' + args.pc_ip + ':' + HTTP_SERVER_PORT + '/'
 
     pepper_session = None
 
@@ -39,11 +41,6 @@ if __name__ == '__main__':
             print("PEPPER launching URL: ", url)
             tablet_service.showWebview(url)
 
-
-    # # Launch HTTP server
-    def get_memory_game_url(pc_address):
-        return pc_address + 'memorygame/game.html'
-
     # Launch page on pepper
     launch_address(get_memory_game_url(HTTP_SERVER))
 
@@ -60,10 +57,8 @@ if __name__ == '__main__':
 
     # Called when a client sends a message
     def message_received(client, server, message):
-        if len(message) > 200:
-            message = message[:200] + '..'
         print("Client(%d) said: %s" % (client['id'], message))
 
 
     from web_sockets import run_sockets
-    run_sockets(WEB_SOCKET_PORT, new_client, client_left, message_received)
+    run_sockets(args.pc_ip, WEB_SOCKET_PORT, new_client, client_left, message_received)
