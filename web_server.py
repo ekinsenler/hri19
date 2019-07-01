@@ -9,8 +9,7 @@ def get_memory_game_url(pc_address):
 
 class WebServer:
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self):
 
         self.app = Flask(__name__, static_url_path='')
 
