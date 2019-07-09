@@ -21,42 +21,22 @@ if __name__ == '__main__':
     is_emulation = args.emul
     HTTP_SERVER = 'http://' + args.pc_ip + ':' + HTTP_SERVER_PORT + '/'
 
-    pepper_session = None
+    pepper_application = None
 
-    def get_pepper_session():
-        global pepper_session
-        if pepper_session is None:
+    def get_pepper_application():
+        global pepper_application
+        if pepper_application is None:
             import qi
-            pepper_session = qi.Session()
             try:
-                pepper_session.connect("tcp://" + args.pep_ip + ":" + PEPPER_CMD_PORT)
+                pepper_application = qi.Application(["HumanGreeter", "SpeechRecognition", "--qi-url=" + "tcp://" + args.pep_ip + ":" + PEPPER_CMD_PORT])
+                pepper_application.start()
             except RuntimeError as e:
                 print("Can't connect to Naoqi at ip \"" + args.pep_ip + "\" on port " + PEPPER_CMD_PORT)
                 raise e
-        return pepper_session
-
-
-    def launch_address(url):
-        if is_emulation:
-            import webbrowser as wb
-            wb.open(url)
-        else:
-            tablet_service = get_pepper_session().service("ALTabletService")
-            print("PEPPER launching URL: ", url)
-            tablet_service.showWebview(url)
-
-    def run_game():
-        launch_address(get_memory_game_url(HTTP_SERVER))
-
-    def run_welcome():
-        launch_address(get_welcome_url(HTTP_SERVER))
-
-    # Launch page on pepper
-    #run_welcome()
-    run_game()
+        return pepper_application
 
     # Setup game controller
-    controller = Controller(get_pepper_session())
+    controller = Controller(get_pepper_application(), get_welcome_url(HTTP_SERVER), get_memory_game_url(HTTP_SERVER))
     clients = dict()
 
     def get_client_id(client):
@@ -83,30 +63,32 @@ if __name__ == '__main__':
             # Save client name so we can detect if message from pepper browser
             clients[get_client_id(client)] = message
         elif message == "WELCOME_SCREEN":
-            # Run welcome interaction. After user agreed to
-            # play game call run_game()
-            print "Welcome received"
+            controller.on_welcome()
         elif message == "ACTION_START_GAME":
             # Message sent by welcome page after click on Start game button
-            run_game()
+            pass
         elif message == "GAME_INIT":
             if is_pepper(client):
-                controller.on_init()
+                controller.on_game_init()
         elif message == "GAME_WINNER":
             if is_pepper(client):
-                controller.on_game_win()
-                run_welcome()
+                controller.game_on_win()
         elif message == "GAME_MISTAKES_2":
             pass
         elif message == "GAME_MISTAKES_4":
             pass
         elif message == "GAME_GOOD_1":
             if is_pepper(client):
-                controller.success_1()
+                controller.game_success_1()
         elif message == "GAME_GOOD_2":
             if is_pepper(client):
-                controller.success_2()
+                controller.game_success_2()
 
 
-    from web_sockets import run_sockets
-    run_sockets(args.vm_ip, WEB_SOCKET_PORT, new_client, client_left, message_received)
+    try:
+        controller.on_init()
+
+        from web_sockets import run_sockets
+        run_sockets(args.vm_ip, WEB_SOCKET_PORT, new_client, client_left, message_received)
+    finally:
+        controller.close()
