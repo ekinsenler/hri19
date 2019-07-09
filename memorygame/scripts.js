@@ -13,6 +13,7 @@ var timerStart = Date.now();
 var timerPassed;
 var counter = 0;
 var connectIndicator = document.getElementById("connection");
+var sentWelcome = false;
 
 // if user is running mozilla then use it's built-in WebSocket
 window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -29,7 +30,11 @@ connection.onopen = function () {
 
   }
 
-  connection.send("Hello! Connection from " + name)
+  connection.send("I'M " + name);
+  if (!sentWelcome) {
+    connection.send("GAME_INIT");
+    sentWelcome = true;
+  }
 };
 connection.onerror = function (error) {
   connectIndicator.innerHTML = "NO";
@@ -44,13 +49,16 @@ function comfort() {
 }
 
 function congratulate1() {
-  console.log('congratulate...');
+  connection.send("GAME_GOOD_1")
 }
 
 function congratulate2() {
-  console.log('congratulate...');
-} // game scripts
+  connection.send("GAME_GOOD_2")
+}
 
+function onGameWin() {
+  connection.send("GAME_WINNER")
+}
 
 function flipCard() {
   if (lockBoard) return;
@@ -83,18 +91,24 @@ function disableCards() {
   console.log(counter);
 
   if (counter === 6) {
-    congratulate2();
+    onGameWin();
+    cards.forEach(function (card) {
+      return card.classList.remove('flip');
+    });
+    cards.forEach(function (card) {
+      return card.addEventListener('click', flipCard);
+    });
 
-    if (confirm("Would you like to restart the game?")) {
-      setTimeout(function () {
-        cards.forEach(function (card) {
-          return card.classList.remove('flip');
-        });
-        cards.forEach(function (card) {
-          return card.addEventListener('click', flipCard);
-        });
-      }, 500);
-    }
+    // if (confirm("Would you like to restart the game?")) {
+    //   setTimeout(function () {
+    //     cards.forEach(function (card) {
+    //       return card.classList.remove('flip');
+    //     });
+    //     cards.forEach(function (card) {
+    //       return card.addEventListener('click', flipCard);
+    //     });
+    //   }, 500);
+    //}
   }
 
   resetBoard();
