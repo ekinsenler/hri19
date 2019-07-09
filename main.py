@@ -4,7 +4,7 @@ HTTP_SERVER_PORT = '9580'
 
 PEPPER_BWSR_ID = 'Linux; Android 5.1; LPT_200AR Build/LMY47I'
 
-from web_server import get_memory_game_url
+from web_server import get_memory_game_url, get_welcome_url
 from controller import Controller
 
 if __name__ == '__main__':
@@ -45,15 +45,19 @@ if __name__ == '__main__':
             print("PEPPER launching URL: ", url)
             tablet_service.showWebview(url)
 
+    def run_game():
+        launch_address(get_memory_game_url(HTTP_SERVER))
+
+    def run_welcome():
+        launch_address(get_welcome_url(HTTP_SERVER))
+
     # Launch page on pepper
-    launch_address(get_memory_game_url(HTTP_SERVER))
+    #run_welcome()
+    run_game()
 
     # Setup game controller
     controller = Controller(get_pepper_session())
     clients = dict()
-
-    def run_game():
-        launch_address(get_memory_game_url(HTTP_SERVER))
 
     def get_client_id(client):
         return client['id']
@@ -76,16 +80,22 @@ if __name__ == '__main__':
     def message_received(client, server, message):
         print("Client(%d) said: %s" % (client['id'], message))
         if "I'M" in message:
+            # Save client name so we can detect if message from pepper browser
             clients[get_client_id(client)] = message
         elif message == "WELCOME_SCREEN":
-            pass
+            # Run welcome interaction. After user agreed to
+            # play game call run_game()
+            print "Welcome received"
+        elif message == "ACTION_START_GAME":
+            # Message sent by welcome page after click on Start game button
+            run_game()
         elif message == "GAME_INIT":
             if is_pepper(client):
                 controller.on_init()
         elif message == "GAME_WINNER":
             if is_pepper(client):
                 controller.on_game_win()
-                run_game()
+                run_welcome()
         elif message == "GAME_MISTAKES_2":
             pass
         elif message == "GAME_MISTAKES_4":

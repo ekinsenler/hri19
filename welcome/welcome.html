@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-Welcome page
+<label id="connection">NO</label>
+<button id="start">Start game</button>
 </body>
+<script>
+
+    var connectIndicator = document.getElementById("connection");
+    var sentWelcome = false;
+    // if user is running mozilla then use it's built-in WebSocket
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
+    // open connection
+    var connection = new WebSocket('ws://' + window.location.hostname + ':9581');
+
+    connection.onopen = function () {
+        connectIndicator.innerHTML = "OK";
+        console.log("Socket connected");
+        var name = window.navigator.userAgent;
+        try {
+            name = name.split('(')[1].split(')')[0]
+        } catch (e) {
+
+        }
+
+        connection.send("I'M " + name);
+        if (!sentWelcome) {
+            connection.send("WELCOME_SCREEN");
+            sentWelcome = true;
+        }
+    };
+    connection.onerror = function (error) {
+        connectIndicator.innerHTML = "NO";
+    };
+
+    connection.onmessage = function (message) {
+
+    };
+
+    document.getElementById("start").addEventListener("click", function () {
+        connection.send("ACTION_START_GAME")
+    })
+
+</script>
 </html>

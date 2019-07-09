@@ -6,6 +6,8 @@ from flask import Flask, request, send_from_directory
 def get_memory_game_url(pc_address):
     return pc_address + 'memorygame/game.html'
 
+def get_welcome_url(pc_address):
+    return pc_address + 'welcome/welcome.html'
 
 class WebServer:
 
