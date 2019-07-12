@@ -18,6 +18,10 @@ class Controller:
         self.welcome_url = welcome_url
         self.game_url = game_url
 
+        self.current_state = None
+        self.face_detect_active = False
+        self.speech_recogn_active = False
+
         self.app = app
         session = app.session
         # Get the service ALMemory.
@@ -45,12 +49,6 @@ class Controller:
         self.posture_service = session.service("ALRobotPosture")
         self.motion_service = session.service("ALMotion")
         #self.face_detection.subscribe("HumanGreeter")
-
-        self.current_state = None
-        self.face_detect_active = False
-        self.speech_recogn_active = False
-        self.got_face = False
-        self.asked = False
 
         self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You smart!"]
         self.encorage_frases= ['Try again', 'You can do it!', 'Very close!', ]
