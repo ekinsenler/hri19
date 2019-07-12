@@ -44,7 +44,7 @@ class Controller:
         self.face_detection = session.service("ALFaceDetection")
         #self.face_detection.subscribe("HumanGreeter")
 
-        self.current_state = STATE_WAITING_USER
+        self.current_state = None
         self.face_detect_active = False
         self.speech_recogn_active = False
         self.got_face = False
@@ -153,7 +153,7 @@ class Controller:
         self.say("Wow! You did it!")
 
     def game_mistake_2(self):
-        self.say(self.encorage_frases[randint(0, len(self.encorage_frases))])
+        self.say(self.encorage_frases[randint(0, len(self.encorage_frases) - 1)])
 
     def game_mistake_4(self):
         self.say("No problem, you can do it next time!")
