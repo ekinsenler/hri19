@@ -66,7 +66,7 @@ if __name__ == '__main__':
             controller.on_welcome()
         elif message == "ACTION_START_GAME":
             # Message sent by welcome page after click on Start game button
-            pass
+            controller.on_jump_to_game()
         elif message == "GAME_INIT":
             if is_pepper(client):
                 controller.on_game_init()
@@ -74,9 +74,11 @@ if __name__ == '__main__':
             if is_pepper(client):
                 controller.game_on_win()
         elif message == "GAME_MISTAKES_2":
-            pass
+            if is_pepper(client):
+                controller.game_mistake_2()
         elif message == "GAME_MISTAKES_4":
-            pass
+            if is_pepper(client):
+                controller.game_mistake_4()
         elif message == "GAME_GOOD_1":
             if is_pepper(client):
                 controller.game_success_1()
@@ -87,7 +89,6 @@ if __name__ == '__main__':
 
     try:
         controller.on_init()
-
         from web_sockets import run_sockets
         run_sockets(args.vm_ip, WEB_SOCKET_PORT, new_client, client_left, message_received)
     finally:

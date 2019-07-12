@@ -1,4 +1,5 @@
 from random import randint
+import time
 
 STATE_WAITING_USER = "STATE_WAITING_USER"
 STATE_WAITING_AGREE_TO_START = "STATE_WAITING_AGREE_TO_START"
@@ -41,8 +42,11 @@ class Controller:
         self.current_state = STATE_WAITING_USER
         self.face_detect_active = False
         self.speech_recogn_active = False
+        self.got_face = False
+        self.asked = False
 
         self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You smart!"]
+        self.encorage_frases= ['Try again', 'You can do it!', 'Very close!', ]
 
     def launch_address(self, url):
         tablet_service = self.app.session.service("ALTabletService")
@@ -63,7 +67,7 @@ class Controller:
             self.ba_service.setEnabled(False)
             self.face_detect_active = False
 
-    def start_ask(self, ask_id, vocabulary):
+    def start_ask(self, vocabulary):
         self.asr.pause(True)
         self.asr.setVocabulary(vocabulary, False)
         self.asr.pause(False)
@@ -77,10 +81,27 @@ class Controller:
             self.speech_recogn_active = False
 
     def on_word_recognized(self, value):
-        print value
+        print "My value: ",value
+        if value[0] == 'yes':
+            print "Yes said"
+            self.launch_address(self.game_url)
+            self.stop_ask()
+            #self.got_face = False
+
 
     def on_human_tracked(self, value):
-        print str(None) if len(value) == 0 else "some_face"
+        if value == []:  # empty value when the face disappears
+            print "Face disappeared"
+            self.got_face = False
+        else:
+            if not self.got_face:  # only the first time a face appears
+                self.got_face = True
+                print "I saw a face!"
+                if not self.asked:
+                    self.say("Hello, Do you want to play a game?")
+                    self.start_ask(['yes', 'no'])
+                    self.asked = True
+
 
     def close(self):
         print "Clearing subscriptions"
@@ -103,9 +124,11 @@ class Controller:
     def on_init(self):
         self.launch_address(self.welcome_url)
         self.current_state = STATE_WAITING_USER
+        self.start_detect_face()
 
     def on_welcome(self):
-        self.start_detect_face()
+        #self.start_detect_face()
+        pass
 
     def on_jump_to_game(self):
         self.launch_address(self.game_url)
@@ -122,4 +145,10 @@ class Controller:
 
     def game_on_win(self):
         self.say("Wow! You did it!")
+
+    def game_mistake_2(self):
+        self.say(self.encorage_frases[randint(0, len(self.encorage_frases))])
+
+    def game_mistake_4(self):
+        self.say("No problem, you can do it next time!")
 
