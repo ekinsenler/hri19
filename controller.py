@@ -150,7 +150,8 @@ class Controller:
         self.say(self.cheers_frases[randint(0, len(self.cheers_frases) - 1)])
 
     def game_on_win(self):
-        self.say("Wow! You did it!")
+        self.say("Wow! You did it! Try it again!")
+        self.launch_address(self.game_url)
 
     def game_mistake_2(self):
         self.say(self.encorage_frases[randint(0, len(self.encorage_frases) - 1)])

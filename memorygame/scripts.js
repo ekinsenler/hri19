@@ -6,11 +6,7 @@ var cards = [document.getElementById('card1'), document.getElementById('card2'),
               document.getElementById('card7'), document.getElementById('card8'),
               document.getElementById('card9'), document.getElementById('card10'),
               document.getElementById('card11'), document.getElementById('card12')];
-var hasFlippedCard = false;
-var lockBoard = false;
 var firstCard, secondCard;
-var timerStart = Date.now();
-var timerPassed;
 var counter = 0;
 var connectIndicator = document.getElementById("connection");
 var sentWelcome = false;
@@ -19,6 +15,7 @@ var sentWelcome = false;
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 
 var connection = null;
+var unflipTimeoutBinding = null;
 
 function connect() {
   // open connection
@@ -55,10 +52,6 @@ function connect() {
 
 connect();
 
-function comfort() {
-  console.log('comfort...');
-}
-
 function congratulate1() {
   connection.send("GAME_GOOD_1")
 }
@@ -72,20 +65,23 @@ function onGameWin() {
 }
 
 function flipCard() {
-  if (lockBoard) return;
-  if (this === firstCard) return;
-  this.classList.add('flip');
+  if (this.classList.contains('flip'))
+      return;
 
-  if (!hasFlippedCard) {
-    // first click
-    hasFlippedCard = true;
+  if (firstCard != null && secondCard != null) {
+    // Clicked third card while 2 is flipped
+    unflipCardsNow();
+    this.classList.add('flip');
     firstCard = this;
-    return;
-  } 
-  
-  // second click
-  secondCard = this;
-  checkForMatch();
+  } else if (firstCard != null && secondCard == null) {
+    this.classList.add('flip');
+    secondCard = this;
+    checkForMatch();
+  } else {
+    // No card flipped
+    this.classList.add('flip');
+    firstCard = this;
+  }
 }
 
 function checkForMatch() {
@@ -94,15 +90,16 @@ function checkForMatch() {
 }
 
 function disableCards() {
-  congratulate1();
-  console.log("Well done.");
+
   firstCard.removeEventListener('click', flipCard);
   secondCard.removeEventListener('click', flipCard);
   counter += 1;
-  console.log(counter);
+  firstCard = null;
+  secondCard = null;
+  console.log("Disable");
 
   if (counter === 6) {
-    onGameWin();
+
     cards.forEach(function (card) {
       return card.classList.remove('flip');
     });
@@ -110,42 +107,23 @@ function disableCards() {
       return card.addEventListener('click', flipCard);
     });
 
-    // if (confirm("Would you like to restart the game?")) {
-    //   setTimeout(function () {
-    //     cards.forEach(function (card) {
-    //       return card.classList.remove('flip');
-    //     });
-    //     cards.forEach(function (card) {
-    //       return card.addEventListener('click', flipCard);
-    //     });
-    //   }, 500);
-    //}
+    onGameWin();
+  } else {
+    congratulate1();
   }
-
-  resetBoard();
-  timerStart = Date.now();
 }
 
 function unflipCards() {
-  lockBoard = true;
-  setTimeout(function () {
-    firstCard.classList.remove('flip');
-    secondCard.classList.remove('flip');
-    resetBoard();
-  }, 1500);
-  timerPassed = Date.now() - timerStart; //console.log(timerPassed); 
-
-  if (timerPassed >= 10000) {
-    timerStart = Date.now(); // comfort
-
-    console.log("Take your time. Don't worry.");
-    comfort();
-  }
+  unflipTimeoutBinding = setTimeout(unflipCardsNow, 1500);
 }
 
-function resetBoard() {
-  hasFlippedCard = false;
-  lockBoard = false;
+function unflipCardsNow() {
+  if (unflipTimeoutBinding != null) {
+    clearTimeout(unflipTimeoutBinding);
+    unflipTimeoutBinding = null;
+  }
+  firstCard.classList.remove('flip');
+  secondCard.classList.remove('flip');
   firstCard = null;
   secondCard = null;
 }
