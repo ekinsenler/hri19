@@ -1,8 +1,13 @@
 from random import randint
 import time
 
+# State of looking for a face
 STATE_WAITING_USER = "STATE_WAITING_USER"
+# State when pepper wait user to say yes for start a game
 STATE_WAITING_AGREE_TO_START = "STATE_WAITING_AGREE_TO_START"
+# State of playing a game
+STATE_WAIT_GAME = "STATE_WAIT_GAME"
+# State of playing a game
 STATE_PLAYING = "STATE_PLAYING"
 
 
@@ -81,26 +86,25 @@ class Controller:
             self.speech_recogn_active = False
 
     def on_word_recognized(self, value):
-        print "My value: ",value
-        if value[0] == 'yes':
-            print "Yes said"
-            self.launch_address(self.game_url)
-            self.stop_ask()
-            #self.got_face = False
-
+        print "Word received: ",value
+        if self.current_state == STATE_WAITING_AGREE_TO_START:
+            if value[0] == 'yes':
+                self.current_state = STATE_WAIT_GAME
+                self.launch_address(self.game_url)
+                self.stop_face_detect()
+                self.stop_ask()
+            else:
+                self.say("Please!")
 
     def on_human_tracked(self, value):
         if value == []:  # empty value when the face disappears
             print "Face disappeared"
-            self.got_face = False
         else:
-            if not self.got_face:  # only the first time a face appears
-                self.got_face = True
-                print "I saw a face!"
-                if not self.asked:
-                    self.say("Hello, Do you want to play a game?")
-                    self.start_ask(['yes', 'no'])
-                    self.asked = True
+            print "I saw a face!"
+            if self.current_state == STATE_WAITING_USER:
+                self.current_state = STATE_WAITING_AGREE_TO_START
+                self.say("Hello, Do you want to play a game?")
+                self.start_ask(['yes', 'no'])
 
 
     def close(self):
@@ -135,13 +139,15 @@ class Controller:
 
     def on_game_init(self):
         print "Received initialization"
-        self.say("Okay! Find all pokemon twins. You can do it!")
+        if self.current_state == STATE_WAIT_GAME:
+            self.current_state = STATE_PLAYING
+            self.say("Okay! Find all pokemon twins. You can do it!")
 
     def game_success_2(self):
         self.say("Wow! You are doing great!")
 
     def game_success_1(self):
-        self.say(self.cheers_frases[randint(0, len(self.cheers_frases))])
+        self.say(self.cheers_frases[randint(0, len(self.cheers_frases) - 1)])
 
     def game_on_win(self):
         self.say("Wow! You did it!")
