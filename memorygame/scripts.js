@@ -17,32 +17,43 @@ var sentWelcome = false;
 
 // if user is running mozilla then use it's built-in WebSocket
 window.WebSocket = window.WebSocket || window.MozWebSocket;
-// open connection
-var connection = new WebSocket('ws://' + window.location.hostname + ':9581');
 
-connection.onopen = function () {
-  connectIndicator.innerHTML = "OK";
-  console.log("Socket connected");
-  var name = window.navigator.userAgent;
-  try {
-    name = name.split('(')[1].split(')')[0]
-  } catch (e) {
+var connection = null;
 
-  }
+function connect() {
+  // open connection
+  connection = new WebSocket('ws://' + window.location.hostname + ':9581');
 
-  connection.send("I'M " + name);
-  if (!sentWelcome) {
-    connection.send("GAME_INIT");
-    sentWelcome = true;
-  }
-};
-connection.onerror = function (error) {
-  connectIndicator.innerHTML = "NO";
-};
+  connection.onopen = function () {
+    connectIndicator.innerHTML = "OK";
+    console.log("Socket connected");
+    var name = window.navigator.userAgent;
+    try {
+      name = name.split('(')[1].split(')')[0]
+    } catch (e) {
 
-connection.onmessage = function (message) {
+    }
 
-};
+    connection.send("I'M " + name);
+    if (!sentWelcome) {
+      connection.send("GAME_INIT");
+      sentWelcome = true;
+    }
+  };
+  connection.onerror = function (error) {
+    connectIndicator.innerHTML = "NO";
+  };
+
+  connection.onclose = function () {
+    setTimeout(connect, 500)
+  };
+
+  connection.onmessage = function (message) {
+
+  };
+}
+
+connect();
 
 function comfort() {
   console.log('comfort...');
