@@ -42,6 +42,8 @@ class Controller:
         # self.asr.pause(False)
         #self.asr.subscribe("SpeechRecognition")
         self.face_detection = session.service("ALFaceDetection")
+        self.posture_service = session.service("ALRobotPosture")
+        self.motion_service = session.service("ALMotion")
         #self.face_detection.subscribe("HumanGreeter")
 
         self.current_state = None
@@ -121,6 +123,7 @@ class Controller:
             self.speech_recogn_active = False
 
         self.srsub.signal.disconnect(self.ch2)
+        self.posture_service.goToPosture("StandInit", 2.0)
 
     def say(self, message):
         self.tts.say(message)
@@ -135,12 +138,16 @@ class Controller:
         pass
 
     def on_jump_to_game(self):
+        self.current_state = STATE_WAIT_GAME
+        self.stop_face_detect()
+        self.stop_ask()
         self.launch_address(self.game_url)
 
     def on_game_init(self):
         print "Received initialization"
         if self.current_state == STATE_WAIT_GAME:
             self.current_state = STATE_PLAYING
+            self.motion_service.angleInterpolation(["HeadYaw", "HeadPitch"], [0, 0], 1.0, True)
             self.say("Okay! Find all pokemon twins. You can do it!")
 
     def game_success_2(self):
