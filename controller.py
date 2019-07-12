@@ -22,6 +22,8 @@ class Controller:
         self.face_detect_active = False
         self.speech_recogn_active = False
 
+        self.games_won = 0
+
         self.app = app
         session = app.session
         # Get the service ALMemory.
@@ -48,10 +50,18 @@ class Controller:
         self.face_detection = session.service("ALFaceDetection")
         self.posture_service = session.service("ALRobotPosture")
         self.motion_service = session.service("ALMotion")
+        # Call it to set stiffness method to recover if thermal error occurred to head
+        self.motion_service.setStiffnesses("Body", 1)
         #self.face_detection.subscribe("HumanGreeter")
 
         self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You smart!"]
         self.encorage_frases= ['Try again', 'You can do it!', 'Very close!', ]
+
+    def cheers_movement(self):
+        pass
+
+    def game_introduction_movement(self):
+        pass
 
     def launch_address(self, url):
         tablet_service = self.app.session.service("ALTabletService")
@@ -145,20 +155,24 @@ class Controller:
         print "Received initialization"
         if self.current_state == STATE_WAIT_GAME:
             self.current_state = STATE_PLAYING
-            self.motion_service.angleInterpolation(["HeadYaw", "HeadPitch"], [0, 0], 1.0, True)
+            #self.motion_service.angleInterpolation(["HeadYaw", "HeadPitch"], [0, 0], 1.0, True)
+            self.game_introduction_movement()
             self.say("Okay! Find all pokemon twins. You can do it!")
 
     def game_success_2(self):
         self.say("Wow! You are doing great!")
 
     def game_success_1(self):
+        self.cheers_movement()
         self.say(self.cheers_frases[randint(0, len(self.cheers_frases) - 1)])
 
     def game_on_win(self):
+        self.games_won += 1
         self.say("Wow! You did it! Try it again!")
         self.launch_address(self.game_url)
 
     def game_mistake_2(self):
+        self.cheers_movement()
         self.say(self.encorage_frases[randint(0, len(self.encorage_frases) - 1)])
 
     def game_mistake_4(self):
