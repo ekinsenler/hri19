@@ -1,17 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Welcome</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1280, user-scalable=no" />
+    <title>HRI 2019</title>
     <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<label id="connection">NO</label>
-<button id="start">Start game</button>
-</body>
-<script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-image: url(img/poke.jpg);
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 1280px 1000px;
+        }
+        h1 {
+            font-weight: strong;
+            font-size: 300%;
+            font-family: "Verdana";
+        }
+        h2 {
+            font-weight: normal;
+            font-size: 200%;
+            font-family: "Verdana";
+        }
+        p {
+            font-weight: normal;
+            font-size: 120%;
+        }
+        input[type=button] {
+            background-color: #3B6CB8;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 14px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 24px;
+            margin:10px 10px 10px 10px;
+        }
 
-    var connectIndicator = document.getElementById("connection");
+    </style>
+</head>
+
+<body>
+
+<!-- status -->
+<div align='left' id='status'> <font color='red'>NOT CONNECTED</font> </div>
+
+<div align='center' id='textup'>
+    <h2> </h2>
+</div>
+
+<!-- text -->
+<h1>
+    <div align='center' id='text_title'> Human-Robot Interaction </div>
+</h1>
+
+<br>
+
+<div align='center'> <img width=800 id='image_default' src="img/welcome.png" alt=""/> </div>
+
+<br>
+
+
+<br>
+
+<!-- buttons -->
+<div align='center' id='buttons'>
+    <input type="button" id="run" value="Start" onclick="runslides()">
+</div>
+
+
+<!-- ****** SCRIPTS ****** -->
+
+<script>
+    var connectIndicator = document.getElementById("status");
     var sentWelcome = false;
     // if user is running mozilla then use it's built-in WebSocket
     window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -58,4 +123,6 @@
     })
 
 </script>
+
+</body>
 </html>
