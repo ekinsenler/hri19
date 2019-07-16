@@ -37,31 +37,23 @@ class Controller:
         self.ch1 = self.fdsub.signal.connect(self.on_human_tracked)
         self.srsub = self.memory.subscriber("WordRecognized")
         self.ch2 = self.srsub.signal.connect(self.on_word_recognized)
-        # self.vocabulary = ["yes", "no", "please", "hello", "goodbye", "hi, there", "go to the kitchen"]
 
         # Get the services ALTextToSpeech and ALFaceDetection.
         self.tts = session.service("ALTextToSpeech")
         self.asr = session.service("ALSpeechRecognition")
         self.asr.setLanguage("English")
-        # self.asr.pause(True)
-        # self.asr.setVocabulary(self.vocabulary, False)
-        # self.asr.pause(False)
-        #self.asr.subscribe("SpeechRecognition")
         self.face_detection = session.service("ALFaceDetection")
         self.posture_service = session.service("ALRobotPosture")
         self.motion_service = session.service("ALMotion")
+        self.animated_speech = session.service("ALAnimatedSpeech")
         # Call it to set stiffness method to recover if thermal error occurred to head
         self.motion_service.setStiffnesses("Body", 1)
-        #self.face_detection.subscribe("HumanGreeter")
 
-        self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You smart!"]
+        self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You're smart!"]
         self.encorage_frases= ['Try again', 'You can do it!', 'Very close!', ]
-
-    def cheers_movement(self):
-        pass
-
-    def game_introduction_movement(self):
-        pass
+        self.asConf = {"bodyLanguageMode","contextual"}
+        self.sonarValueList = ["Device/SubDeviceList/Platform/Front/Sonar/Sensor/Value",
+                          "Device/SubDeviceList/Platform/Back/Sonar/Sensor/Value"]
 
     def launch_address(self, url):
         tablet_service = self.app.session.service("ALTabletService")
@@ -104,16 +96,20 @@ class Controller:
                 self.stop_face_detect()
                 self.stop_ask()
             else:
-                self.say("Please!")
+                self.say("^start(animations/Stand/Gestures/Please_1) Please! ^wait(animations/Stand/Gestures/Please_1)")
+                self.posture_service.goToPosture("StandInit", 2.0)
 
     def on_human_tracked(self, value):
         if value == []:  # empty value when the face disappears
             print "Face disappeared"
         else:
             print "I saw a face!"
-            if self.current_state == STATE_WAITING_USER:
+            front_distance = self.memory.getListData(self.sonarValueList)[0]
+            print front_distance
+            if self.current_state == STATE_WAITING_USER and front_distance < 2:
                 self.current_state = STATE_WAITING_AGREE_TO_START
-                self.say("Hello, Do you want to play a game?")
+                self.say("Hello! ^start(animations/Stand/Gestures/Hey_1) Do you want to play a game? ^wait(animations/Stand/Gestures/Hey_1)")
+                self.posture_service.goToPosture("StandInit", 2.0)
                 self.start_ask(['yes', 'no'])
 
 
@@ -131,12 +127,16 @@ class Controller:
             self.speech_recogn_active = False
 
         self.srsub.signal.disconnect(self.ch2)
-        self.posture_service.goToPosture("StandInit", 2.0)
+        self.posture_service.goToPosture("StandInit", 4.0)
 
-    def say(self, message):
-        self.tts.say(message)
+
+    def say(self,message):
+        self.animated_speech.say(message)
+
 
     def on_init(self):
+        print self.tts.getVolume()
+        self.tts.setVolume(0.5)
         self.launch_address(self.welcome_url)
         self.current_state = STATE_WAITING_USER
         self.start_detect_face()
@@ -155,15 +155,13 @@ class Controller:
         print "Received initialization"
         if self.current_state == STATE_WAIT_GAME:
             self.current_state = STATE_PLAYING
-            #self.motion_service.angleInterpolation(["HeadYaw", "HeadPitch"], [0, 0], 1.0, True)
-            self.game_introduction_movement()
-            self.say("Okay! Find all pokemon twins. You can do it!")
+            self.say("Okay! Find all pokemon twins. ^start(animations/Stand/Gestures/ShowTablet_2)! You can play on my tablet. ^wait(animations/Stand/Gestures/ShowTablet_2)")
+            self.posture_service.goToPosture("StandInit", 3.0)
 
     def game_success_2(self):
         self.say("Wow! You are doing great!")
 
     def game_success_1(self):
-        self.cheers_movement()
         self.say(self.cheers_frases[randint(0, len(self.cheers_frases) - 1)])
 
     def game_on_win(self):
@@ -172,7 +170,6 @@ class Controller:
         self.launch_address(self.game_url)
 
     def game_mistake_2(self):
-        self.cheers_movement()
         self.say(self.encorage_frases[randint(0, len(self.encorage_frases) - 1)])
 
     def game_mistake_4(self):

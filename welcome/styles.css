@@ -1,10 +1,11 @@
 body {
-      font-family: sans-serif;
-      background-image: url(img/poke.jpg);
-      background-size: contain;
-      //background-repeat: no-repeat;
-      background-position: 0px 30px;
-    }
+            font-family: sans-serif;
+            background-image: url(img/poke.jpg);
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 1280px 1100px;
+        }
     h1 {
       font-weight: strong;
       font-size: 300%;

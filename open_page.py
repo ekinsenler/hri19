@@ -4,7 +4,7 @@ import qi
 
 PEPPER_IP = '10.0.1.201'
 PEPPER_CMD_PORT = '9559'
-PC_IP = '10.0.1.208'
+PC_IP = '10.0.1.204'
 HTTP_SERVER_PORT = '9580'
 
 pepper_session = qi.Session()
