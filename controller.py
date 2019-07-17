@@ -9,6 +9,8 @@ STATE_WAITING_AGREE_TO_START = "STATE_WAITING_AGREE_TO_START"
 STATE_WAIT_GAME = "STATE_WAIT_GAME"
 # State of playing a game
 STATE_PLAYING = "STATE_PLAYING"
+# State of offer user to play again
+STATE_WAITING_OFFER_PLAY_AGAIN = "STATE_WAITING_OFFER_PLAY_AGAIN"
 
 
 class Controller:
@@ -21,6 +23,17 @@ class Controller:
         self.current_state = None
         self.face_detect_active = False
         self.speech_recogn_active = False
+
+        self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You're smart!"]
+        self.encorage_frases = ['Try again', 'You can do it!', 'Very close!', ]
+        self.begging = ['Please!', "Play! It's fine", 'Oh, come on!', ]
+        self.asConf = {"bodyLanguageMode", "contextual"}
+        self.sonarValueList = ["Device/SubDeviceList/Platform/Front/Sonar/Sensor/Value",
+                               "Device/SubDeviceList/Platform/Back/Sonar/Sensor/Value"]
+
+        self.positive_answers = ["yes", "sure", "okay", "fine"]
+        self.answers = ["no"]
+        self.answers.extend(self.positive_answers)
 
         self.games_won = 0
 
@@ -47,13 +60,10 @@ class Controller:
         self.motion_service = session.service("ALMotion")
         self.animated_speech = session.service("ALAnimatedSpeech")
         # Call it to set stiffness method to recover if thermal error occurred to head
-        self.motion_service.setStiffnesses("Body", 1)
+        #self.motion_service.setStiffnesses("RHand", 1)
 
-        self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You're smart!"]
-        self.encorage_frases= ['Try again', 'You can do it!', 'Very close!', ]
-        self.asConf = {"bodyLanguageMode","contextual"}
-        self.sonarValueList = ["Device/SubDeviceList/Platform/Front/Sonar/Sensor/Value",
-                          "Device/SubDeviceList/Platform/Back/Sonar/Sensor/Value"]
+    def _get_random_item(self, inp_list):
+        return inp_list[randint(0, len(inp_list) - 1)]
 
     def launch_address(self, url):
         tablet_service = self.app.session.service("ALTabletService")
@@ -90,13 +100,13 @@ class Controller:
     def on_word_recognized(self, value):
         print "Word received: ",value
         if self.current_state == STATE_WAITING_AGREE_TO_START:
-            if value[0] == 'yes':
+            if value[0] in self.positive_answers:
                 self.current_state = STATE_WAIT_GAME
                 self.launch_address(self.game_url)
                 self.stop_face_detect()
                 self.stop_ask()
             else:
-                self.say("^start(animations/Stand/Gestures/Please_1) Please! ^wait(animations/Stand/Gestures/Please_1)")
+                self.say("^start(animations/Stand/Gestures/Please_1) %s ^wait(animations/Stand/Gestures/Please_1)" % self._get_random_item(self.begging))
                 self.posture_service.goToPosture("StandInit", 2.0)
 
     def on_human_tracked(self, value):
@@ -108,9 +118,8 @@ class Controller:
             print front_distance
             if self.current_state == STATE_WAITING_USER and front_distance < 2:
                 self.current_state = STATE_WAITING_AGREE_TO_START
-                self.say("Hello! ^start(animations/Stand/Gestures/Hey_1) Do you want to play a game? ^wait(animations/Stand/Gestures/Hey_1)")
-                self.posture_service.goToPosture("StandInit", 2.0)
-                self.start_ask(['yes', 'no'])
+                self.say("Hello! ^start(animations/Stand/Emotions/Positive/Happy_4) Do you want to play a game?")
+                self.start_ask(self.answers)
 
 
     def close(self):
@@ -142,8 +151,14 @@ class Controller:
         self.start_detect_face()
 
     def on_welcome(self):
-        #self.start_detect_face()
-        pass
+        if self.current_state == STATE_WAITING_OFFER_PLAY_AGAIN:
+            if self.games_won == 1:
+                text = "You won your first game!"
+            else:
+                text = "You won %s times!" % self.games_won
+            self.say("^start(animations/Stand/Gestures/Yes_1) " + text + " One more?")
+            self.current_state = STATE_WAITING_AGREE_TO_START
+            self.start_ask(self.answers)
 
     def on_jump_to_game(self):
         self.current_state = STATE_WAIT_GAME
@@ -155,22 +170,27 @@ class Controller:
         print "Received initialization"
         if self.current_state == STATE_WAIT_GAME:
             self.current_state = STATE_PLAYING
-            self.say("Okay! Find all pokemon twins. ^start(animations/Stand/Gestures/ShowTablet_2)! You can play on my tablet. ^wait(animations/Stand/Gestures/ShowTablet_2)")
-            self.posture_service.goToPosture("StandInit", 3.0)
+            if self.games_won > 0:
+                text = "Okay! Let's start!"
+            else:
+                text = "Okay! Find all pokemon twins! ^start(animations/Stand/Gestures/ShowTablet_2) You can play on my tablet. ^stop(animations/Stand/Gestures/ShowTablet_2)"
+            self.say(text)
+            self.posture_service.goToPosture("StandInit", 0.5)
 
     def game_success_2(self):
         self.say("Wow! You are doing great!")
 
     def game_success_1(self):
-        self.say(self.cheers_frases[randint(0, len(self.cheers_frases) - 1)])
+        self.say(self._get_random_item(self.cheers_frases))
 
     def game_on_win(self):
         self.games_won += 1
-        self.say("Wow! You did it! Try it again!")
-        self.launch_address(self.game_url)
+        self.say("^start(animations/Stand/Gestures/Enthusiastic_4) Wow! You did it!")
+        self.current_state = STATE_WAITING_OFFER_PLAY_AGAIN
+        self.launch_address(self.welcome_url)
 
     def game_mistake_2(self):
-        self.say(self.encorage_frases[randint(0, len(self.encorage_frases) - 1)])
+        self.say(self._get_random_item(self.encorage_frases))
 
     def game_mistake_4(self):
         self.say("No problem, you can do it next time!")
