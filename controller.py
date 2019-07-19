@@ -23,10 +23,14 @@ class Controller:
         self.current_state = None
         self.face_detect_active = False
         self.speech_recogn_active = False
+        self.game_start_time = 0
+        self.game_time_results = []
+        self.asked_to_play = 0
 
-        self.cheers_frases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You're smart!"]
-        self.encorage_frases = ['Try again', 'You can do it!', 'Very close!', ]
+        self.cheers_phrases = ["Good job!", "Cool!", "Awesome!", "I'm impressed!", "You're smart!"]
+        self.encourage_phrases = ['Try again', 'You can do it!', 'Very close!', ]
         self.begging = ['Please!', "Play! It's fine", 'Oh, come on!', ]
+        self.play_again_phrases = ['One more time?', "Let's improve your result, yeah?", 'Another practice?', ]
         self.asConf = {"bodyLanguageMode", "contextual"}
         self.sonarValueList = ["Device/SubDeviceList/Platform/Front/Sonar/Sensor/Value",
                                "Device/SubDeviceList/Platform/Back/Sonar/Sensor/Value"]
@@ -34,8 +38,6 @@ class Controller:
         self.positive_answers = ["yes", "sure", "okay", "fine"]
         self.answers = ["no"]
         self.answers.extend(self.positive_answers)
-
-        self.games_won = 0
 
         self.app = app
         session = app.session
@@ -106,8 +108,15 @@ class Controller:
                 self.stop_face_detect()
                 self.stop_ask()
             else:
-                self.say("^start(animations/Stand/Gestures/Please_1) %s ^wait(animations/Stand/Gestures/Please_1)" % self._get_random_item(self.begging))
-                self.posture_service.goToPosture("StandInit", 2.0)
+                self.asked_to_play += 1
+                if self.asked_to_play >= 2:
+                    self.current_state = STATE_WAITING_USER
+                    self.stop_ask()
+                    self.posture_service.goToPosture("StandInit", 0.5)
+                    self.on_init()
+                else:
+                    self.say("^start(animations/Stand/Gestures/Please_1) %s ^wait(animations/Stand/Gestures/Please_1)" % self._get_random_item(self.begging))
+                    self.posture_service.goToPosture("StandInit", 0.7)
 
     def on_human_tracked(self, value):
         if value == []:  # empty value when the face disappears
@@ -118,7 +127,8 @@ class Controller:
             print front_distance
             if self.current_state == STATE_WAITING_USER and front_distance < 2:
                 self.current_state = STATE_WAITING_AGREE_TO_START
-                self.say("Hello! ^start(animations/Stand/Emotions/Positive/Happy_4) Do you want to play a game?")
+                self.asked_to_play = 0
+                self.say("Hello! ^start(animations/Stand/Emotions/Positive/Happy_4) Do you want to practice your memory?")
                 self.start_ask(self.answers)
 
 
@@ -136,7 +146,7 @@ class Controller:
             self.speech_recogn_active = False
 
         self.srsub.signal.disconnect(self.ch2)
-        self.posture_service.goToPosture("StandInit", 4.0)
+        self.posture_service.goToPosture("StandInit", 0.5)
 
 
     def say(self,message):
@@ -144,20 +154,28 @@ class Controller:
 
 
     def on_init(self):
+        self.asked_to_play = 0
         print self.tts.getVolume()
-        self.tts.setVolume(0.5)
+        self.tts.setVolume(1)
         self.launch_address(self.welcome_url)
         self.current_state = STATE_WAITING_USER
+        self.say("^start(animations/Stand/BodyTalk/BodyTalk_1) Hey, I'm Pepper. I can train your cognitive skills.")
         self.start_detect_face()
 
     def on_welcome(self):
         if self.current_state == STATE_WAITING_OFFER_PLAY_AGAIN:
-            if self.games_won == 1:
-                text = "You won your first game!"
+            if len(self.game_time_results) == 1:
+                text = "Just %s seconds! Great result!" % int(self.game_time_results[0])
             else:
-                text = "You won %s times!" % self.games_won
-            self.say("^start(animations/Stand/Gestures/Yes_1) " + text + " One more?")
+                difference = self.game_time_results[-2] - self.game_time_results[-1]
+                percent = difference * 100 / self.game_time_results[-2]
+                if difference > 0:
+                    text = "^start(animations/Stand/Emotions/Positive/Hysterical_1) %s percent faster than before!" % percent
+                else:
+                    text = "^start(animations/Stand/Gestures/Thinking_1) It took longer but I can see a progress!"
+            self.say("^start(animations/Stand/Gestures/Yes_1) " + text + " " + self._get_random_item(self.play_again_phrases))
             self.current_state = STATE_WAITING_AGREE_TO_START
+            self.asked_to_play = 0
             self.start_ask(self.answers)
 
     def on_jump_to_game(self):
@@ -170,27 +188,28 @@ class Controller:
         print "Received initialization"
         if self.current_state == STATE_WAIT_GAME:
             self.current_state = STATE_PLAYING
-            if self.games_won > 0:
+            if len(self.game_time_results) > 0:
                 text = "Okay! Let's start!"
             else:
                 text = "Okay! Find all pokemon twins! ^start(animations/Stand/Gestures/ShowTablet_2) You can play on my tablet. ^stop(animations/Stand/Gestures/ShowTablet_2)"
             self.say(text)
             self.posture_service.goToPosture("StandInit", 0.5)
+            self.game_start_time = time.time()
 
     def game_success_2(self):
         self.say("Wow! You are doing great!")
 
     def game_success_1(self):
-        self.say(self._get_random_item(self.cheers_frases))
+        self.say(self._get_random_item(self.cheers_phrases))
 
     def game_on_win(self):
-        self.games_won += 1
+        self.game_time_results.append(time.time() - self.game_start_time)
         self.say("^start(animations/Stand/Gestures/Enthusiastic_4) Wow! You did it!")
         self.current_state = STATE_WAITING_OFFER_PLAY_AGAIN
         self.launch_address(self.welcome_url)
 
     def game_mistake_2(self):
-        self.say(self._get_random_item(self.encorage_frases))
+        self.say(self._get_random_item(self.encourage_phrases))
 
     def game_mistake_4(self):
         self.say("No problem, you can do it next time!")
