@@ -16,81 +16,99 @@
 \usepackage{makecell}
 \usepackage{float}
 \setmarginsrb{3 cm}{1 cm}{3 cm}{1 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
-
-\title{HRI system of tutoring robot}			% Title
-\author{Horpynchenko, Dmytro \\ Xu, Wei \\ Senler, Ekin} 								% Author
+ 
+\title{HRI system of tutoring robot}                 % Title
+\author{Horpynchenko, Dmytro \\ Xu, Wei \\ Senler, Ekin}                                                           % Author
 \newcommand{\studentnumber}{1807584 \\ 1797103 \\ 1801499}
-\date{\today}											% Date
-
+\date{\today}                                                                               % Date
+ 
 \makeatletter
 \let\thetitle\@title
 \let\theauthor\@author
 \makeatother
-
+ 
 \pagestyle{empty}
 \fancyhf{}
-
+ 
 \lhead{\thetitle}
 %\cfoot{\thepage}
-
+ 
 \begin{document}
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+ 
 \begin{titlepage}
-	\centering
-    \includegraphics[scale = 0.2]{images/sapienza_logo_only.png}\\[1.0 cm]	% University Logo
-    \textsc{\LARGE Sapienza University of Rome}\\[2.0 cm]	% University Name
+        \centering
+    \includegraphics[scale = 0.2]{images/sapienza_logo_only.png}\\[1.0 cm]  % University Logo
+    \textsc{\LARGE Sapienza University of Rome}\\[2.0 cm]    % University Name
     \vspace{2cm}
-	\textsc{\Large Human-Robot Interaction}\\[0.5 cm]				% Course Name
-	%\textsc{\large Analysis of the paper}\\[0.5 cm]				% Course details
-	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
-	{ \huge \bfseries \thetitle}\\
-	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
-
-	\begin{minipage}{0.4\textwidth}
-		\begin{flushleft} \large
-			\emph{Authors:}\\
-			\theauthor
-			\end{flushleft}
-			\end{minipage}~
-			\begin{minipage}{0.4\textwidth}
-			\begin{flushright} \large
-			\emph{Student Numbers:} \\
-			\studentnumber
-		\end{flushright}
-	\end{minipage}\\[2 cm]
-
-
-	\vfill
-
+        \textsc{\Large Human-Robot Interaction}\\[0.5 cm]                           % Course Name
+        %\textsc{\large Analysis of the paper}\\[0.5 cm]                            % Course details
+        \rule{\linewidth}{0.2 mm} \\[0.4 cm]
+        { \huge \bfseries \thetitle}\\
+        \rule{\linewidth}{0.2 mm} \\[1.5 cm]
+ 
+        \begin{minipage}{0.4\textwidth}
+               \begin{flushleft} \large
+                       \emph{Authors:}\\
+                       \theauthor
+                       \end{flushleft}
+                       \end{minipage}~
+                       \begin{minipage}{0.4\textwidth}
+                       \begin{flushright} \large
+                       \emph{Student Numbers:} \\
+                       \studentnumber
+               \end{flushright}
+        \end{minipage}\\[2 cm]
+ 
+ 
+        \vfill
+ 
 \end{titlepage}
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+ 
 \tableofcontents
 \pagebreak
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+ 
 \pagebreak
-
+ 
 \section{Introduction}
-
+ 
 \newpage
 \section{Concept}
-
+ 
 \newpage
 \section{Implementation}
-
-\newpage
+\subsection{Naoqi python API}
+Naoqi python API helps to the users for creating application on the Pepper and uses it's service with high level python code. We used Naoqi to interact with the Pepper.
+\subsection{Application flow}
+We used Pepper's tablet to display memory game. For that purpose, we create a local HTTP server by using library called \textit{Flask}. Flask is a lightweight WSGI (Web Server Gateway Interface) web application framework. We publish the web page that contains the game from a local network. To make the communication between robot and game possible, we also establish a socket server with a framework called \textit{web socket}. Web socket server is an application listening on any port of a TCP server that follows a specific protocol. From then onwards,  we connect that server from the local network. In that way, we are able to get state of the game which is changing according to user's instruction. In figure \ref{fig:diagram}, the flow chart is described in order to clarify the system in high level.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/activityDia.png}
+\caption{Activity Diagram}
+\label{fig:diagram}
+\end{figure}
+\subsection{Structure}
+The application consist of 4 key file:
+\begin{itemize}
+\item \textbf{controller.py}: Controller class is used to control robot behavior and isolate the application from robot control functions. For example, \textit{main.py} doesn't have a direct access to robot.
+\item \textbf{web\_server.py}: Web server which contains the game, is initialized and all the path directing are being handled by this file.
+\item \textbf{web\_socket.py}: This file create and attach a TCP socket to local host.
+\item \textbf{main.py}: Main file initialize the session with robot and also all the other file in order to form the application.
+\end{itemize}
+\subsection{Memory game}
+Memory game is a javascript project that developed with pure javascript without frameworks and libraries. There are various state in the game that are determined by the user instruction. Moreover, game state is also shared to robot in spite of determining pepper reaction to state change.
 \section{Results}
-
+ 
 \newpage
 \section{Future work}
-
+ 
 \newpage
 \bibliographystyle{plain}
 \bibliography{biblist}
-
+ 
 \end{document}
