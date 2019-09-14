@@ -1,0 +1,46 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath}
+\begin{document}
+
+\section{Introduction}
+During the past decades, many researchers have studied the effectiveness of computer systems in tutoring tasks. James A. Kulik (2015)\cite{0034654315581420} reviewed the literature from the period and found the ITSs(intelligent tutoring systems) raise student performance well beyond the level of conventional classes and even beyond the level achieved by students instructed by human tutors. With the rising of researches in human-robot interactions, the effectiveness of a social robot in tutoring tasks is also being studied. From a recent large-scale study\cite{8673077}, researchers found that the tutoring interactions consisting of a robot and a tablet didn't have an added value on effectiveness when teaching English vocabulary to young children English vocabulary comparing to scenarios with only a tablet. However, previous study shows that physically-present robot tutors do produce better learning gains than on-screen tutors\cite{Leyzberg_thephysical}. So we decided to explore other subjects of tutoring. Inspired by  \cite{Park:2017:GGM:2909824.3020213}. A tangram game with a social robot was designed to help children develop a growing mindset. Results show that interacting with a peer-like robot can help children promote the same mindset. We develop a memory game to investigate if robots can help children build better memory and logic skills. The game is implemented on the tablet of a pepper robot. During gaming time, the robot will encourage children to complete the game through verbal interactions. When a child wins one round of the game, the result will be announced and he/she can choose whether to continue or not. If he/she finishes the game multiple times, the robot will also tell if the result is improving or not. We didn't explore the effectiveness of the approach since it requires a massive experiment with hundreds of participates.
+
+\section{Experiment}
+
+\subsection{Robot}
+Pepper is a social humanoid robot optimized for human-robot interaction and released by Softbank Robotics in 2014. It is a robot standing 120cm with a screen on its chest and has 20 degrees of freedom for natural and expressive movements as well as perception modules to recognize and interact with the person talking to him. 15 languages including English, French, Spanish, German are available  for speech recognition and dialogue. It equips with touch sensors, LEDs and microphones for multimodal interactions as well as infrared sensors, bumpers, an inertial unit, 2D and 3D cameras, and sensors for omnidirectional and autonomous navigation. It has been widely used in the commercial market by over 2,000 companies as an assistant to welcome, inform and guide visitors in an innovative way. Also, it is available as a research and educational robot for schools and universities to teach programming and human-robot interactions. 
+
+\subsection{Game Mechanism}
+Pokemon Match is a memory game we designed and implemented with human-robot interactions to enhance cognitive skills. It consists of a 3 x 4 table with 12 tiles and each of them has a pokemon image on the front side. Every time a tile is clicked, it will flip to the backside and show an image with a pokemon. If two tiles with the same pokemon are chosen, they will stay fixed and cannot be flipped again. Otherwise, they will flip back to the initial state automatically. When all the cards are selected and matched, pepper will ask you if you would like to play it again. During the game, every time you make a successful move or a wrong move, pepper will also congratulate or encourage you through verbal and non-verbal behaviors.
+
+\subsection{Experiment Design}
+Although we couldn't test the effectiveness of our system by doing actual experiments, we still design an experiment in our study. We want to investigate the effect of robots with verbal and non-verbal feedback on children's cognitive skills. The experiment has three conditions:
+\begin{enumerate}
+\item \textit{Multiple-round game} where children play a multiple-round game with the robot
+\item \textit{One-round game} where children play a one-round game with the robot
+\item \textit{Tablet-only (idle robot)} where children play a one-round game on the touch screen and the robot keeps still.
+\item \textit{Control} condition where children watching television or dancing with the robot.
+\end{enumerate}
+
+In our work, we want to investigate the effect that the different conditions have on learning gains. Based on predictions both from the aforementioned literature and earlier studies with robot tutors, we formulate the following hypothesis:
+\begin{itemize}
+\item H1: Children play the memory game with multiple rounds will perform better in the assessment comparing to those who only play one round.
+\item H2: Children perform better when learning from a robot than from a tablet only.
+\end{itemize}
+
+We didn't develop an assessment application but a test or a game can be involved in this part.
+
+\section{Future work}
+
+In future work, we expect that we can implement the experiment in the real scenario for a large-scale and long term study. Also, the variety of different kinds of interactions will
+be explored.
+
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{introduction}
+
+\end{document}
