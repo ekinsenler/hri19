@@ -76,11 +76,48 @@
 \pagebreak
  
 \section{Introduction}
-During the past decades, many researchers have studied the effectiveness of computer systems in tutoring tasks. James A. Kulik (2015)\cite{0034654315581420} reviewed the literature from the period and found the ITSs(intelligent tutoring systems) raise student performance well beyond the level of conventional classes and even beyond the level achieved by students instructed by human tutors. With the rising of researches in human-robot interactions, the effectiveness of a social robot in tutoring tasks is also being studied. From a recent large-scale study\cite{8673077}, researchers found that the tutoring interactions consisting of a robot and a tablet didn't have an added value on effectiveness when teaching English vocabulary to young children English vocabulary comparing to scenarios with only a tablet. However, previous study shows that physically-present robot tutors do produce better learning gains than on-screen tutors\cite{Leyzberg_thephysical}. So we decided to explore other subjects of tutoring. Inspired by  \cite{Park:2017:GGM:2909824.3020213}. A tangram game with a social robot was designed to help children develop a growing mindset. Results show that interacting with a peer-like robot can help children promote the same mindset. We develop a memory game to investigate if robots can help children build better memory and logic skills. The game is implemented on the tablet of a pepper robot. During gaming time, the robot will encourage children to complete the game through verbal interactions. When a child wins one round of the game, the result will be announced and he/she can choose whether to continue or not. If he/she finishes the game multiple times, the robot will also tell if the result is improving or not. We didn't explore the effectiveness of the approach since it requires a massive experiment with hundreds of participates.
+During the past decades, many researchers have studied the effectiveness of computer systems in tutoring tasks. James A. Kulik (2015)\cite{0034654315581420} reviewed the literature from the period and found the ITSs (intelligent tutoring systems) raise student performance well beyond the level of conventional classes and even beyond the level achieved by students instructed by human tutors. With the rising of researches in human-robot interactions, the effectiveness of a social robot in tutoring tasks is also being studied. 
+\\
+From a recent large-scale study\cite{8673077}, researchers found that the tutoring interactions consisting of a robot and a tablet didn't have an added value on effectiveness when teaching English vocabulary to young children English vocabulary comparing to scenarios with only a tablet. However, previous study shows that physically-present robot tutors do produce better learning gains than on-screen tutors\cite{Leyzberg_thephysical}. 
+\\
+Confidering previous studies and inspired by \cite{Park:2017:GGM:2909824.3020213}, we decided to explore other subjects of tutoring. As a result, tangram-like game (See Section \ref{sect_game_descr}) with a socially-interactive robot were designed to help children develop a growing mindset. Results showed in Section \ref{sect_exper} has proved that  interacting with a peer-like robot can help children promote the same mindset. 
  
 \newpage
 \section{Concept}
-
+\subsection{Idea}
+\label{sect_idea}
+Similar to the setup in \cite{Park:2017:GGM:2909824.3020213} we designed a social-friendly tutoring robot that is able to autonomously provide a support to children with learning a material that prepared by their teacher. In this way we are able to simplify and entertain learning process for children meanwhile reduce workload for human teachers.
+\\
+As a tutoring agent we used a Pepper robot - a semi-humanoid robot, produced by SoftBank Robotics, which is able to interact with humans in a social way through voice, gestures and visual information showed on it's tablet (See Figure \ref{pepper}). It has rich communication functionality  such as text-to-speech and voice recognition, anthropomorphic-like embodiment with full control over it's joints, comprehensive list of predefined gestures, sonar sensors for distances measurement, multiple cameras with face detection support and many more that allows building complex human-responsive solutions.
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.3]{images/pepper.jpg}
+\caption{Pepper robot}
+\label{pepper}
+\end{center}
+\end{figure}
+\\
+All tutoring process was established trough verbal communication supported by appropriate gestures from robot. On Figure \ref{concept_scheme} full robot-user interaction is shown. 
+\\
+First, robot introduce itself to peers such that to both explain it's mission and indicate it's readiness to use. Then it moves to the awaiting mode and observes space around for a person that is close enough and at the same time ready for communication.
+\\
+After detecting of the potential user Pepper offers him a practice of the cognitive skills and in case of positive answer will start game on it's tablet together with some little instructions. Behavior while user plays game more detailed described in the Section \ref{sect_game_descr}.
+\\
+After user finishes the game Pepper provides user with feedback regarding his results, like playing time in case of first round or time  improvement in comparing to the previous time. Here we might also give to user useful advises regarding improving playing techniques such that to receive progress in teaching and encourage kid for a new try. After  every round user is asked to play one more and depending from user answer will return to the awaiting mode or start game again.
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.43]{images/HRI_concept.png}
+\caption{Complex Pepper-User interaction scheme}
+\label{concept_scheme}
+\end{center}
+\end{figure}
+\subsection{Game}
+\label{sect_game_descr}
+We develop a memory game to investigate if robots can help children build better memory and logic skills. A so called "Match Match" game, which is running on the tablet of the Pepper, is a card game in which all of the cards are laid face down on a surface and two cards are flipped face up over each turn. The object of the game is to turn over pairs of matching cards. By word "matching" in our case means any combination of associated entities that child has to memorize: image-image, image-word or word-word pairs. In our project user is trained to memorize \textit{Pokemon} heroes faces.
+\\
+While playing the game user clicks on a card in order to flip it. In case of two cards are matching each other they remain unflipped and user might proceed to next cards. Game is considered finished if all cards are unflipped.
+\\
+All along the game the tutoring robot provide user with some suggestion,  advises or simple cheering phrases in order to motivate child to keep trying after failures and loosing interest. As described in Section \ref{sect_idea} in the end the tutor gives the user a brief feedback.
 \newpage
 \section{Implementation}
 \subsection{Naoqi python API}
@@ -103,7 +140,11 @@ The application consist of 4 key file:
 \end{itemize}
 \subsection{Memory game}
 Memory game is a javascript project that developed with pure javascript without frameworks and libraries. There are various state in the game that are determined by the user instruction. Moreover, game state is also shared to robot in spite of determining pepper reaction to state change.
+\subsection{Repository}
+Final source code of the project is public accessible as git repository on the GitLab web service by \url{https://gitlab.com/dim4gg/hri19/} link.
+\newpage
 \section{Experiment}
+\label{sect_exper}
 
 \subsection{Robot}
 Pepper is a social humanoid robot optimized for human-robot interaction and released by Softbank Robotics in 2014. It is a robot standing 120cm with a screen on its chest and has 20 degrees of freedom for natural and expressive movements as well as perception modules to recognize and interact with the person talking to him. 15 languages including English, French, Spanish, German are available  for speech recognition and dialogue. It equips with touch sensors, LEDs and microphones for multimodal interactions as well as infrared sensors, bumpers, an inertial unit, 2D and 3D cameras, and sensors for omnidirectional and autonomous navigation. It has been widely used in the commercial market by over 2,000 companies as an assistant to welcome, inform and guide visitors in an innovative way. Also, it is available as a research and educational robot for schools and universities to teach programming and human-robot interactions. 
@@ -131,8 +172,7 @@ We didn't develop an assessment application but a test or a game can be involved
 \newpage
 \section{Future work}
 
-In future work, we expect that we can implement the experiment in the real scenario for a large-scale and long term study. Also, the variety of different kinds of interactions will
-be explored.
+In future work, we expect that we can implement the experiment in the real scenario for a large-scale and long term study. Also, the variety of different kinds of interactions will be explored.
  
 \newpage
 \bibliographystyle{plain}
