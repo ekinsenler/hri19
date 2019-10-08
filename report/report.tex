@@ -126,8 +126,8 @@ Naoqi python API helps to the users for creating application on the Pepper and u
 We used Pepper's tablet to display memory game. For that purpose, we create a local HTTP server by using library called \textit{Flask}. Flask is a lightweight WSGI (Web Server Gateway Interface) web application framework. We publish the web page that contains the game from a local network. To make the communication between robot and game possible, we also establish a socket server with a framework called \textit{web socket}. Web socket server is an application listening on any port of a TCP server that follows a specific protocol. From then onwards,  we connect that server from the local network. In that way, we are able to get state of the game which is changing according to user's instruction. In figure \ref{fig:diagram}, the flow chart is described in order to clarify the system in high level.
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{images/flow.png}
-\caption{Activity Diagram}
+\includegraphics[scale=0.42]{images/http_scheme.png}
+\caption{Solution architecture}
 \label{fig:diagram}
 \end{figure}
 \subsection{Structure}
